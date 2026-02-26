@@ -1,0 +1,4 @@
+model: groq/openai/gpt-oss-120b
+tool_path:
+  - ./tools
+safe_yes: true

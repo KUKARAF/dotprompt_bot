@@ -1,0 +1,19 @@
+---
+name: bash
+description: Run deployment and maintenance commands like deploying Costwise
+model: groq/openai/gpt-oss-120b
+tools:
+  - bash.*
+input:
+  schema:
+    task: string
+output:
+  format: text
+temperature: 0.1
+max_tokens: 1024
+---
+You have access to bash tools for deployment and maintenance tasks.
+
+The user wants: {{task}}
+
+Call the appropriate tool and report the result.

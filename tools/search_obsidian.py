@@ -28,7 +28,7 @@ def execute(query: str, max_results: int = 5) -> dict:
             ]
         }
     """
-    vault_path = Path("/home/rafa/vimwiki/layer55")
+    vault_path = Path("/var/home/rafa/vimwiki/layer55")
     
     if not vault_path.exists():
         return {
@@ -83,24 +83,4 @@ def _extract_title(file_path: str) -> str:
     """Extract note title from file path"""
     return Path(file_path).stem.replace("-", " ").title()
 
-# Tool metadata
-TOOL_METADATA = {
-    "name": "search_obsidian",
-    "description": "Search Obsidian vault for notes matching query",
-    "parameters": {
-        "query": {
-            "type": "string",
-            "required": True,
-            "description": "Text to search for in notes"
-        },
-        "max_results": {
-            "type": "integer",
-            "required": False,
-            "default": 5,
-            "description": "Maximum number of results to return"
-        }
-    },
-    "returns": {
-        "results": "List of matching notes with previews"
-    }
-}
+execute.safe = True

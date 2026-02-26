@@ -1,30 +1,18 @@
 ---
 name: obsidian_search
-description: Search Obsidian vault for notes and information (DOES NOT answer questions)
-model: groq/llama-3.1-70b
-triggers:
-  - keyword: "search notes"
-  - keyword: "find in obsidian"
-  - keyword: "obsidian"
+description: Search Obsidian vault for notes and information
+model: openrouter/meta-llama/llama-3.1-70b-instruct
 tools:
-  - search_obsidian
+  - search_obsidian.*
 input:
   schema:
     query: string
-    max_results: integer
+    max_results?: integer
 output:
   format: text
 temperature: 0.3
 max_tokens: 2048
 ---
-Search the Obsidian vault for: {{query}}
+Search my Obsidian vault for notes about: {{query}}
 
-{{#if results}}
-Found notes:
-{{#each results}}
-- {{this.title}}: {{this.preview}}
-{{/each}}
-
-{{else}}
-No notes found matching "{{query}}".
-{{/if}}
+Use the search_obsidian tool to find relevant notes, then summarize what you found.
