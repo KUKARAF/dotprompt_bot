@@ -1,7 +1,7 @@
 ---
 name: bash
 description: Run deployment and maintenance commands like deploying Costwise
-model: groq/openai/gpt-oss-120b
+model: openrouter/openai/gpt-oss-120b
 tools:
   - bash.*
 input:
