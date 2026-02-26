@@ -1,3 +1,4 @@
 .aider*
 .env
+config.toml
 __pycache__

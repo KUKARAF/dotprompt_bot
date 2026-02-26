@@ -7,10 +7,11 @@ import os
 import json
 import asyncio
 import tempfile
+import tomllib
 import yaml
 from pathlib import Path
 from groq import Groq
-from telegram.ext import ApplicationBuilder, MessageHandler, filters
+from telegram.ext import ApplicationBuilder, ApplicationHandlerStop, MessageHandler, filters
 from telegram import Update
 from dotenv import load_dotenv
 
@@ -18,6 +19,13 @@ load_dotenv()
 
 PROMPTS_DIR = Path("prompts")
 ROUTER_PROMPT = PROMPTS_DIR / "router.prompt"
+ASK_DIR = Path("/tmp/dotprompt_ask")
+CONFIG_PATH = Path(__file__).parent / "config.toml"
+
+
+def load_config() -> dict:
+    with open(CONFIG_PATH, "rb") as f:
+        return tomllib.load(f)
 
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
@@ -102,6 +110,35 @@ async def route_and_respond(update: Update, context, user_message: str):
         await update.message.reply_text(f"Sorry, something went wrong: {e}")
 
 
+async def handle_ask_reply(update: Update, context):
+    """Check if this message is a reply to a pending ask question from an authorized user."""
+    if not update.message or not update.message.reply_to_message:
+        return
+
+    config = load_config()
+    authorized_users = config.get("telegram", {}).get("authorized_users", [])
+
+    if update.effective_user.id not in authorized_users:
+        return
+
+    reply_to_id = update.message.reply_to_message.message_id
+    chat_id = update.effective_chat.id
+
+    if not ASK_DIR.exists():
+        return
+
+    for qfile in ASK_DIR.glob("*.question"):
+        try:
+            data = json.loads(qfile.read_text())
+        except (json.JSONDecodeError, OSError):
+            continue
+        if data["message_id"] == reply_to_id and data["chat_id"] == chat_id:
+            response_file = ASK_DIR / f"{data['question_id']}.response"
+            response_file.write_text(update.message.text)
+            await update.message.reply_text("Got it, thanks!")
+            raise ApplicationHandlerStop
+
+
 async def handle_message(update: Update, context):
     """Handle incoming text message."""
     user_message = update.message.text
@@ -156,6 +193,7 @@ def main():
     print(f"Discovered prompts: {list(prompts.keys())}")
 
     app = ApplicationBuilder().token(token).build()
+    app.add_handler(MessageHandler(filters.TEXT & filters.REPLY & ~filters.COMMAND, handle_ask_reply), group=-1)
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_handler(MessageHandler(filters.VOICE | filters.AUDIO, handle_voice))
 

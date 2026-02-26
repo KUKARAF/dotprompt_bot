@@ -1,0 +1,15 @@
+[Unit]
+Description=DotPrompt Telegram Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/env/dotprompt_bot
+ExecStart=%h/env/dotprompt_bot/.venv/bin/python bot.py
+EnvironmentFile=%h/env/dotprompt_bot/.env
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

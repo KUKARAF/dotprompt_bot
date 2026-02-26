@@ -1,0 +1,49 @@
+[telegram]
+# Telegram user IDs authorized to answer bot questions
+# Find your user ID by messaging @userinfobot on Telegram
+authorized_users = [123456789]
+
+# Shell commands exposed as tools to the agent.
+# Each [[commands]] block becomes a callable tool.
+#
+#   name        — function name the agent sees (must be unique)
+#   description — shown to the agent so it knows when to use it
+#   command     — shell command to execute
+#   timeout     — max seconds before killing the process (default: 120)
+#   confirm     — if true, agent must ask an authorized user before running (default: false)
+
+[[commands]]
+name = "deploy_costwise"
+description = "Pull latest images and restart the Costwise stack"
+command = "cd ~/env/layer55/costwise && docker compose pull && docker compose restart"
+timeout = 120
+
+[[commands]]
+name = "restart_costwise"
+description = "Restart the Costwise stack without pulling new images"
+command = "cd ~/env/layer55/costwise && docker compose restart"
+timeout = 60
+
+[[commands]]
+name = "costwise_logs"
+description = "Show the last 50 lines of Costwise container logs"
+command = "cd ~/env/layer55/costwise && docker compose logs --tail=50"
+timeout = 30
+
+[[commands]]
+name = "costwise_status"
+description = "Show running status of all Costwise containers"
+command = "cd ~/env/layer55/costwise && docker compose ps"
+timeout = 15
+
+[[commands]]
+name = "disk_usage"
+description = "Show disk usage summary for all mounted filesystems"
+command = "df -h"
+timeout = 10
+
+[[commands]]
+name = "system_uptime"
+description = "Show system uptime and load averages"
+command = "uptime"
+timeout = 10
