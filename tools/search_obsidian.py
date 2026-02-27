@@ -5,17 +5,25 @@ Description: Search Obsidian vault using ripgrep
 
 import subprocess
 import json
+import tomllib
 from pathlib import Path
-import os
+
+CONFIG_PATH = Path(__file__).parent.parent / "config.toml"
+
+
+def _load_config():
+    with open(CONFIG_PATH, "rb") as f:
+        return tomllib.load(f)
+
 
 def execute(query: str, max_results: int = 5) -> dict:
     """
     Search Obsidian vault
-    
+
     Args:
         query: Text to search for
         max_results: Max results to return
-        
+
     Returns:
         {
             "results": [
@@ -28,7 +36,8 @@ def execute(query: str, max_results: int = 5) -> dict:
             ]
         }
     """
-    vault_path = Path("/var/home/rafa/vimwiki/layer55")
+    config = _load_config()
+    vault_path = Path(config.get("paths", {}).get("obsidian_vault", "~/notes")).expanduser()
     
     if not vault_path.exists():
         return {

@@ -3,6 +3,12 @@
 # Find your user ID by messaging @userinfobot on Telegram
 authorized_users = [123456789]
 
+[paths]
+# Path to your Obsidian or notes vault (used by the obsidian search tool)
+obsidian_vault = "~/notes"
+# Path to daily diary/todo markdown files (used by the todo tool)
+diary = "~/diary"
+
 # Shell commands exposed as tools to the agent.
 # Each [[commands]] block becomes a callable tool.
 #
@@ -11,30 +17,8 @@ authorized_users = [123456789]
 #   command     — shell command to execute
 #   timeout     — max seconds before killing the process (default: 120)
 #   confirm     — if true, agent must ask an authorized user before running (default: false)
-
-[[commands]]
-name = "deploy_costwise"
-description = "Pull latest images and restart the Costwise stack"
-command = "cd ~/env/layer55/costwise && docker compose pull && docker compose restart"
-timeout = 120
-
-[[commands]]
-name = "restart_costwise"
-description = "Restart the Costwise stack without pulling new images"
-command = "cd ~/env/layer55/costwise && docker compose restart"
-timeout = 60
-
-[[commands]]
-name = "costwise_logs"
-description = "Show the last 50 lines of Costwise container logs"
-command = "cd ~/env/layer55/costwise && docker compose logs --tail=50"
-timeout = 30
-
-[[commands]]
-name = "costwise_status"
-description = "Show running status of all Costwise containers"
-command = "cd ~/env/layer55/costwise && docker compose ps"
-timeout = 15
+#
+# Add your own commands below. Here are some examples:
 
 [[commands]]
 name = "disk_usage"
@@ -47,3 +31,16 @@ name = "system_uptime"
 description = "Show system uptime and load averages"
 command = "uptime"
 timeout = 10
+
+# Example: Docker deployment commands
+# [[commands]]
+# name = "deploy_myapp"
+# description = "Pull latest images and restart the app stack"
+# command = "cd ~/myapp && docker compose pull && docker compose up -d"
+# timeout = 120
+
+# [[commands]]
+# name = "app_logs"
+# description = "Show the last 50 lines of app container logs"
+# command = "cd ~/myapp && docker compose logs --tail=50"
+# timeout = 30

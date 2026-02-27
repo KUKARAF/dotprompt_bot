@@ -1,13 +1,23 @@
 import datetime as dt
 import os
+import tomllib
+from pathlib import Path
 from typing import Dict
+
+CONFIG_PATH = Path(__file__).parent.parent / "config.toml"
+
+
+def _load_config():
+    with open(CONFIG_PATH, "rb") as f:
+        return tomllib.load(f)
+
 
 def get_todos() -> Dict[str, str]:
     """
     Return the contents of today's todo file.
     """
-    # Build path of today's todo file
-    base = os.path.expanduser('~/vimwiki/diary')
+    config = _load_config()
+    base = os.path.expanduser(config.get("paths", {}).get("diary", "~/diary"))
     path = f"{base}/{dt.datetime.now().strftime('%Y-%m-%d')}.md"
 
     if not os.path.exists(path):
